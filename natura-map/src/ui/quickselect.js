@@ -54,6 +54,47 @@ const PRESETS = [
       qualityGrade: 'research'
     }
   }
+  ,
+  {
+    label: 'Wildflowers of Pacific NW',
+    params: {
+      taxonName: 'Angiospermae',
+      taxonId: 47125,
+      placeName: 'Pacific Northwest',
+      placeId: 52771,
+      qualityGrade: 'research'
+    }
+  },
+  {
+    label: 'Mammals of East Africa',
+    params: {
+      taxonName: 'Mammalia',
+      taxonId: 40151,
+      placeName: 'Kenya',
+      placeId: 6878,
+      qualityGrade: 'research'
+    }
+  },
+  {
+    label: 'Butterflies of Europe',
+    params: {
+      taxonName: 'Papilionoidea',
+      taxonId: 47224,
+      placeName: 'Europe',
+      placeId: 97391,
+      qualityGrade: 'research'
+    }
+  },
+  {
+    label: 'Marine Life of Hawaii',
+    params: {
+      taxonName: 'Animalia',
+      taxonId: 1,
+      placeName: 'Hawaii',
+      placeId: 8,
+      qualityGrade: 'research'
+    }
+  }
 ];
 
 /**

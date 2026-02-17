@@ -23,7 +23,8 @@ export function initMap(container) {
     maxZoom: 18,
     minZoom: 1,
     cancelPendingTileRequestsWhileZooming: true,
-    failIfMajorPerformanceCaveat: false
+    failIfMajorPerformanceCaveat: false,
+    preserveDrawingBuffer: true
   });
 
   map.addControl(new maplibregl.NavigationControl(), 'top-right');

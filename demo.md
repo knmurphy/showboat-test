@@ -274,3 +274,137 @@ Deck.gl modules are dynamically imported only when needed. The default bundle st
 - DuckDB integration for offline analytical queries on GBIF exports
 - More presets and customizable color palettes
 - Export map as image/PDF
+
+---
+
+## New Features
+
+Three features shipped: proper spatial joins for choropleth, customizable color palettes, and map export.
+
+### 1. Turf.js Spatial Join for Choropleth
+
+The choropleth layer previously used a crude bounding-box guess to assign observations to countries. Now it uses proper point-in-polygon testing via @turf/boolean-point-in-polygon, handling both Polygon and MultiPolygon boundaries. Boundaries are cached after first fetch.
+
+```bash
+grep -n 'booleanPointInPolygon\|aggregateByRegion\|fetchBoundaries\|guessCountry' natura-map/src/map/layers/choropleth.js
+```
+
+```output
+7:import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+27:async function fetchBoundaries() {
+48:function aggregateByRegion(geojson, boundaries, colorBy) {
+69:        inside = booleanPointInPolygon(point, boundary);
+74:          if (booleanPointInPolygon(point, { type: 'Feature', geometry: subPoly })) {
+131:  const boundaries = await fetchBoundaries();
+134:  countByCountry = aggregateByRegion(geojson, boundaries, colorBy);
+151:  const boundaries = await fetchBoundaries();
+154:  countByCountry = aggregateByRegion(geojson, boundaries, colorBy);
+```
+
+No more guessCountry() — every observation is tested against actual Natural Earth boundary polygons. The choropleth updateColorBy() now also re-aggregates, supporting species richness mode.
+
+### 2. Customizable Color Palettes
+
+Four named palettes: default, earth, ocean, vivid. Switchable from a dropdown in the sidebar. Iconic taxon colors (Fungi=red, Plantae=green, etc.) remain fixed regardless of palette selection.
+
+```bash
+grep -A1 'const PALETTES' natura-map/src/map/palette.js | head -6 && echo '---' && grep 'setActivePalette\|getActivePalette' natura-map/src/map/palette.js
+```
+
+```output
+const PALETTES = {
+  default: [
+---
+function getActivePaletteColors() {
+export function setActivePalette(name) {
+export function getActivePalette() {
+  const palette = getActivePaletteColors();
+  const palette = getActivePaletteColors();
+  const palette = getActivePaletteColors();
+```
+
+### 3. More Quick-Select Presets
+
+Added 4 new presets (9 total): Wildflowers of Pacific NW, Mammals of East Africa, Butterflies of Europe, Marine Life of Hawaii.
+
+```bash
+grep 'label:' natura-map/src/ui/quickselect.js
+```
+
+```output
+    label: 'Fungi of California',
+    label: 'Birds of Costa Rica',
+    label: 'Reptiles of Australia',
+    label: 'Mushrooms of NE US',
+    label: 'Orchids Worldwide',
+    label: 'Wildflowers of Pacific NW',
+    label: 'Mammals of East Africa',
+    label: 'Butterflies of Europe',
+    label: 'Marine Life of Hawaii',
+```
+
+### 4. Export Map as Image/PDF
+
+PNG export captures the MapLibre canvas via toDataURL and downloads it. Print/PDF opens a print-friendly window with the map image, title, date, and current legend.
+
+```bash
+wc -l natura-map/src/ui/export.js && echo '---' && grep 'preserveDrawingBuffer' natura-map/src/map/engine.js
+```
+
+```output
+      98 natura-map/src/ui/export.js
+---
+    preserveDrawingBuffer: true
+```
+
+preserveDrawingBuffer: true is set on the MapLibre Map constructor — required for canvas export to work.
+
+### Updated build
+
+```bash
+cd natura-map && npx vite build 2>&1
+```
+
+```output
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 32 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m    4.20 kB[22m[1m[22m[2m │ gzip:   1.23 kB[22m
+[2mdist/[22m[2massets/[22m[35mindex-DIAFRyHI.css  [39m[1m[2m    5.13 kB[22m[1m[22m[2m │ gzip:   1.49 kB[22m
+[2mdist/[22m[2massets/[22m[36mindex-D1sK2XzT.js   [39m[1m[33m1,053.96 kB[39m[22m[2m │ gzip: 287.56 kB[22m[2m │ map: 2,298.42 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 1.22s[39m
+```
+
+```bash
+find natura-map/src -type f | sort && echo '---' && cat natura-map/src/**/*.js natura-map/src/**/**/*.js 2>/dev/null | wc -l
+```
+
+```output
+natura-map/src/data/api.js
+natura-map/src/data/cache.js
+natura-map/src/data/transform.js
+natura-map/src/main.js
+natura-map/src/map/deckgl.js
+natura-map/src/map/engine.js
+natura-map/src/map/layers/choropleth.js
+natura-map/src/map/layers/clusters.js
+natura-map/src/map/layers/heatmap.js
+natura-map/src/map/layers/points.js
+natura-map/src/map/palette.js
+natura-map/src/ui/controls.js
+natura-map/src/ui/export.js
+natura-map/src/ui/legend.js
+natura-map/src/ui/quickselect.js
+natura-map/src/ui/search.js
+---
+    1834
+```
+
+16 source files, ~1,834 lines of JavaScript (up from 1,556). Build clean, Turf.js adds only ~9KB gzipped to the bundle.

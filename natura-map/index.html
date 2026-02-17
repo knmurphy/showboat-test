@@ -72,11 +72,28 @@
             <option value="taxon_class">Class</option>
           </select>
         </div>
+        <div class="field">
+          <label for="palette-select">Palette</label>
+          <select id="palette-select">
+            <option value="default">Default</option>
+            <option value="earth">Earth</option>
+            <option value="ocean">Ocean</option>
+            <option value="vivid">Vivid</option>
+          </select>
+        </div>
       </section>
 
       <section id="legend-panel" class="panel">
         <h2>Legend</h2>
         <div id="legend-content"></div>
+      </section>
+
+      <section class="panel export-panel">
+        <h2>Export</h2>
+        <div class="export-buttons">
+          <button id="export-png" class="btn-export">Export PNG</button>
+          <button id="export-pdf" class="btn-export">Print / PDF</button>
+        </div>
       </section>
 
       <footer class="sidebar-footer">

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@turf/boolean-point-in-polygon": "^7.0.0",
     "maplibre-gl": "^5.0.0"
   },
   "optionalDependencies": {

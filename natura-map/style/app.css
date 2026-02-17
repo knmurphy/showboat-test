@@ -353,6 +353,38 @@ html, body {
   text-decoration: underline;
 }
 
+/* Export panel */
+.export-panel {
+  padding-top: 12px;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-export {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.btn-export:hover {
+  border-color: var(--accent);
+  background: var(--bg-panel);
+}
+
+.btn-export:active {
+  opacity: 0.8;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   #app {

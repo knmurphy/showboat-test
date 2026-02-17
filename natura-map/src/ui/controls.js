@@ -38,3 +38,15 @@ export function getActiveLayerType() {
 export function getActiveColorBy() {
   return document.getElementById('color-by').value;
 }
+
+/**
+ * Initialize palette selector dropdown.
+ * @param {Function} onPaletteChange - Called with palette name when changed
+ */
+export function initPaletteControl(onPaletteChange) {
+  const paletteSelect = document.getElementById('palette-select');
+  if (!paletteSelect) return;
+  paletteSelect.addEventListener('change', () => {
+    onPaletteChange(paletteSelect.value);
+  });
+}

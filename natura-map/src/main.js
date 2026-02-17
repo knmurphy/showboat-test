@@ -2,11 +2,13 @@
  * natura-map main entry point.
  * Wires together the map engine, UI, and data modules.
  */
-import { initMap, setData, fitToData, setLayerType, updateColorBy, getUniqueValues } from './map/engine.js';
+import { initMap, getMap, setData, fitToData, setLayerType, updateColorBy, getUniqueValues } from './map/engine.js';
 import { initSearch, triggerSearch } from './ui/search.js';
 import { initQuickSelect } from './ui/quickselect.js';
-import { initControls, getActiveLayerType, getActiveColorBy } from './ui/controls.js';
+import { initControls, getActiveLayerType, getActiveColorBy, initPaletteControl } from './ui/controls.js';
 import { updateLegend, countValues } from './ui/legend.js';
+import { setActivePalette } from './map/palette.js';
+import { initExport } from './ui/export.js';
 
 import * as pointsLayer from './map/layers/points.js';
 import * as heatmapLayer from './map/layers/heatmap.js';
@@ -87,6 +89,16 @@ async function main() {
       updateLegend(colorBy, uniqueValues, counts);
     }
   );
+
+  initPaletteControl((paletteName) => {
+    if (!currentGeojson) return;
+    setActivePalette(paletteName);
+    applyLayer();
+    refreshLegend();
+  });
+
+  // Initialize export
+  initExport(getMap);
 
   // Try loading pre-cached default data
   try {
