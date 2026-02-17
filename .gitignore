@@ -1,8 +1,4 @@
+.DS_Store
 node_modules/
 dist/
-showboat.db
-.DS_Store
-*.log
-.beads/
-sidebar-features.png
-presets-screenshot.png
+.netlify/
